@@ -1,0 +1,76 @@
+class ActivityDiagramParser:
+    def __init__(self):
+        self.activities = []
+
+    def parse(self, text):
+        lines = text.split('\n')
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if '->' in line:
+                source, target = line.split('->')
+                source = source.strip()
+                target = target.strip()
+                self.activities.append((source, target))
+            else:
+                self.activities.append((line, None))
+
+    def get_activities(self):
+        return self.activities
+
+
+class ActivityDiagramGenerator:
+    def __init__(self):
+        pass
+
+    def generate_diagram(self, activities):
+        yuml_code = []
+
+        # Add start node
+        yuml_code.append("[Start]")
+
+        for activity, target_activity in activities:
+            # Add activity node
+            yuml_code.append(f"[{activity}]")
+
+            # Add transition arrow
+            if target_activity:
+                yuml_code.append(f"[{activity}]->[{target_activity}]")
+
+        # Add end node
+        yuml_code.append("[End]")
+
+        return ''.join(yuml_code)
+
+
+class ActivityDiagramCLI:
+    def __init__(self):
+        self.parser = ActivityDiagramParser()
+        self.generator = ActivityDiagramGenerator()
+
+    def run(self):
+        print("Welcome to the Activity Diagram Generator using YUML")
+
+        # Input textual descriptions of activities and transitions
+        activities_text = input("Enter textual descriptions of activities and transitions (one per line, blank line to end):\n")
+
+        try:
+            # Parse the input text
+            self.parser.parse(activities_text)
+
+            # Generate the activity diagram
+            yuml_code = self.generator.generate_diagram(self.parser.get_activities())
+
+            # Display the generated activity diagram
+            print("Generated Activity Diagram (YUML):")
+            print(yuml_code)
+
+        except Exception as e:
+            print("An error occurred while generating the activity diagram:", str(e))
+
+
+# Run the CLI interface
+if __name__ == "__main__":
+    activity_diagram_cli = ActivityDiagramCLI()
+    activity_diagram_cli.run()
